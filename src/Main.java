@@ -1,71 +1,15 @@
-import java.util.HashMap;
+import services.LoginSystem;
+import models.User;
+import ui.Home;
+
 import java.util.Scanner;
-
-class User {
-    private String username, password;
-    private int acc_no, pin;
-    private double deposit;
-
-    public User(String username, String password, int acc_no, int pin, double deposit) {
-        this.username = username;
-        this.password = password;
-        this.acc_no = acc_no;
-        this.pin = pin;
-        this.deposit = deposit;
-    }
-
-    public String getUsername(){ return username; }
-    public String getPassword(){ return password; }
-    public int getPin(){ return pin; }
-    public int getAccountNo(){ return acc_no; }
-    public double getDeposit(){ return deposit; }
-
-}
-
-class LoginSystem {
-    private static HashMap<String, User> users = new HashMap<>();
-
-    // Create new user
-    public static void register(String username, String password, int acc_no, int pin, double deposit){
-        try {
-            if(username == null || password == null){
-                throw new IllegalArgumentException("Username or password cannot be null");
-            }
-            if(users.containsKey(username)){
-                throw new Exception("User already exists.");
-            }
-            users.put(username, new User(username, password, acc_no, pin, deposit));
-            System.out.print("User " + username + "'s account created Successfully!\n");
-        }
-        catch (IllegalArgumentException e){
-            System.out.println("Registration failed: " + e.getMessage());
-        }
-        catch (Exception e){
-            System.out.println("Registration failed: " + e.getMessage());
-        }
-    }
-
-    // Authenticate user
-    public static boolean login(String username, String password){
-        User user = users.get(username);
-        if(users.containsKey(username)){
-            return user.getPassword().equals(password);
-        }
-        return false;
-    }
-}
-
-//class Home {
-//
-//}
 
 public class Main {
     public static void main(String[] args) {
         Scanner sc =  new Scanner(System.in);
         String username, password;
         int ch, acc_no, pin;
-        double deposit;
-        int acc_no_check = 0, pin_check = 0;
+        double balance;
         while(true){
             System.out.println("\n===== Welcome to the Bank =====");
             System.out.println("1. Create Account");
@@ -83,9 +27,9 @@ public class Main {
                     acc_no = sc.nextInt();
                     System.out.print("Set your PIN: ");
                     pin = sc.nextInt();
-                    System.out.print("Enter initial deposit: ");
-                    deposit = sc.nextDouble();
-                    LoginSystem.register(username, password, acc_no, pin, deposit);
+                    System.out.print("Enter initial balance: ");
+                    balance = sc.nextDouble();
+                    LoginSystem.register(username, password, acc_no, pin, balance);
                     break;
 
                 case 2:
@@ -95,7 +39,9 @@ public class Main {
                     password = sc.next();
 
                     if(LoginSystem.login(username, password)){
+                        User user = LoginSystem.users.get(username);
                         System.out.println("Login Successful!");
+                        Home.homePage(user);
                     }
                     else{
                         System.out.println("Invalid Username or Password.");
@@ -103,7 +49,10 @@ public class Main {
                     break;
 
                 case 3:
+                    System.out.println("Thank you for visiting!");
                     return;
+                default:
+                    System.out.println("Invalid Input.");
             }
         }
     }
